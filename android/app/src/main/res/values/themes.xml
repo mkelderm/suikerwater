@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Een licht thema. Behalve de opstartkleur bepaalt dit ook wat de WebView
+         als prefers-color-scheme doorgeeft: licht hier, donker in values-night.
+         Zo volgt de pagina de systeeminstelling, net als in de browser. -->
+    <style name="Theme.Suikerwater" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/page</item>
+    </style>
+</resources>

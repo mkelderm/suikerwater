@@ -1,0 +1,25 @@
+# Gradle en Android
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/local.properties
+*.apk
+*.aab
+
+# Een ondertekensleutel hoort nooit in de repository; zie de README.
+*.jks
+*.keystore
+*.p12
+# Behalve deze: de openbare sleutel voor testbuilds; zie android/app/build.gradle.kts.
+!android/app/test.keystore
+
+# Lokale instellingen van editor en Claude
+.claude/
+.idea/
+.vscode/
+*.iml
+
+node_modules/
+.DS_Store
+Thumbs.db

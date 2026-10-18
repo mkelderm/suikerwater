@@ -1,0 +1,12 @@
+{
+  "name": "suikerwater",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Offline rekenhulp voor suikerwater bij het bottelen met een repeteer-doseerspuit",
+  "scripts": {
+    "test": "node test/calc.test.mjs",
+    "icons": "node tools/make-icons.mjs",
+    "dev": "node tools/dev-server.mjs"
+  }
+}

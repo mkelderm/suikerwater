@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suikerwater – bottelen met de doseerspuit</title>
+<meta name="description" content="Reken uit hoeveel suiker en water je moet oplossen om met een repeteer-doseerspuit te bottelen.">
+
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./app.css">
+<link rel="icon" href="./icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+
+<meta name="theme-color" content="#1b1714" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f3ec" media="(prefers-color-scheme: light)">
+<meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <div class="masthead-text">
+      <h1 class="wordmark">Suikerwater</h1>
+      <p class="tagline">Bottelen met de repeteerspuit</p>
+    </div>
+    <img class="crest" src="./logo.png" alt="MAD">
+  </header>
+
+  <main>
+
+    <!-- ─── Invoer ───────────────────────────────────────────────────────── -->
+    <form class="panel" id="form" novalidate autocomplete="off">
+      <h2 class="panel-head">Jouw batch</h2>
+
+      <div class="field">
+        <label class="field-label" for="sugarPerLitre">
+          Bottelsuiker<span class="sr-only"> in gram per liter</span>
+        </label>
+        <div class="field-input">
+          <input id="sugarPerLitre" name="sugarPerLitre" type="text"
+                 inputmode="decimal" enterkeyhint="next"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 aria-describedby="sugarPerLitre-hint">
+          <span class="unit" aria-hidden="true">g/L</span>
+        </div>
+        <p class="hint" id="sugarPerLitre-hint">Meer suiker is meer koolzuur.</p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="bottleVolume">
+          Volume fles<span class="sr-only"> in liter</span>
+        </label>
+        <div class="field-input">
+          <input id="bottleVolume" name="bottleVolume" type="text"
+                 inputmode="decimal" enterkeyhint="next"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 aria-describedby="bottleVolume-hint">
+          <span class="unit" aria-hidden="true">L</span>
+        </div>
+        <p class="hint" id="bottleVolume-hint">Meestal 0,33 of 0,30 liter.</p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="batchVolume">
+          Te bottelen<span class="sr-only"> volume in liter</span>
+        </label>
+        <div class="field-input">
+          <input id="batchVolume" name="batchVolume" type="text"
+                 inputmode="decimal" enterkeyhint="done"
+                 autocapitalize="off" autocorrect="off" spellcheck="false"
+                 aria-describedby="batchVolume-hint">
+          <span class="unit" aria-hidden="true">L</span>
+        </div>
+        <p class="hint" id="batchVolume-hint">Reken ruim, dan kom je nooit tekort.</p>
+      </div>
+    </form>
+
+    <!-- ─── Uitkomst ─────────────────────────────────────────────────────────
+         Op de uitvoervelden staat aria-live="off", omdat <output> van zichzelf
+         al een live gebied is. Zonder dat zou elke toetsaanslag drie losse
+         getallen voorlezen; de samenvatting onderaan doet dat rustiger.
+         ─────────────────────────────────────────────────────────────────── -->
+    <section class="readout" aria-labelledby="readout-head">
+      <h2 class="panel-head" id="readout-head">Los dit op</h2>
+
+      <div class="figures">
+        <div class="figure">
+          <span class="figure-label">Water</span>
+          <span class="figure-value"><output id="water" aria-live="off">–</output><i class="figure-unit">g</i></span>
+        </div>
+        <div class="figure">
+          <span class="figure-label">Suiker</span>
+          <span class="figure-value"><output id="sugar" aria-live="off">–</output><i class="figure-unit">g</i></span>
+        </div>
+        <div class="figure figure--total">
+          <span class="figure-label">Samen suikerwater</span>
+          <span class="figure-value"><output id="total" aria-live="off">–</output><i class="figure-unit">g</i></span>
+        </div>
+      </div>
+
+      <p class="notice" id="notice" hidden></p>
+    </section>
+
+    <!-- ─── Afgeleide gegevens ───────────────────────────────────────────── -->
+    <section class="detail-panel" aria-labelledby="detail-head">
+      <h2 class="panel-head" id="detail-head">Per fles</h2>
+      <dl class="detail">
+        <div class="detail-row">
+          <dt>Suiker per injectie</dt>
+          <dd><span id="perBottleSugar">–</span> g</dd>
+        </div>
+        <div class="detail-row">
+          <dt>Water per injectie</dt>
+          <dd><span id="perBottleWater">–</span> ml</dd>
+        </div>
+        <div class="detail-row">
+          <dt>Aantal flessen</dt>
+          <dd><span id="bottles">–</span></dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- ─── Geavanceerd ──────────────────────────────────────────────────── -->
+    <section class="advanced">
+      <h2 class="sr-only">Geavanceerde instellingen</h2>
+      <button type="button" class="disclosure" id="disclosure"
+              aria-expanded="false" aria-controls="advanced-body">
+        <span class="disclosure-mark" aria-hidden="true"></span>
+        Spuit en suikersoort
+      </button>
+
+      <div class="advanced-body" id="advanced-body" hidden>
+        <p class="advanced-intro">
+          Deze twee blijven normaal gesproken gelijk. Pas ze alleen aan als je een
+          andere doseerspuit of een andere soort suiker gebruikt.
+        </p>
+
+        <div class="field">
+          <label class="field-label" for="syringeVolume">
+            Inhoud spuit<span class="sr-only"> in milliliter</span>
+          </label>
+          <div class="field-input">
+            <input id="syringeVolume" name="syringeVolume" type="text"
+                   inputmode="decimal" autocapitalize="off" autocorrect="off" spellcheck="false"
+                   aria-describedby="syringeVolume-hint">
+            <span class="unit" aria-hidden="true">ml</span>
+          </div>
+          <p class="hint" id="syringeVolume-hint">De standaard brouwspuit is 5 ml.</p>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="sugarDensity">
+            Dichtheid suiker<span class="sr-only"> in gram per milliliter</span>
+          </label>
+          <div class="field-input">
+            <input id="sugarDensity" name="sugarDensity" type="text"
+                   inputmode="decimal" autocapitalize="off" autocorrect="off" spellcheck="false"
+                   aria-describedby="sugarDensity-hint">
+            <span class="unit" aria-hidden="true">g/mL</span>
+          </div>
+          <p class="hint" id="sugarDensity-hint">Kristalsuiker is 1,587.</p>
+        </div>
+
+        <button type="button" class="reset" id="reset">Terug naar standaardwaarden</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="colophon">
+    <p>Rekenmodel van de bottelsuiker-spreadsheet van HobbyBrouwShop.nl.
+       Water is in gram, uitgaande van 1 g per ml.</p>
+  </footer>
+
+</div>
+
+<!-- Eén rustige samenvatting voor schermlezers, bijgewerkt zodra het typen
+     even stilligt. -->
+<p class="sr-only" id="announcer" role="status" aria-live="polite"></p>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

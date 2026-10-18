@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Een testbuild staat naast de echte app; zo zie je op het beginscherm welke welke is. -->
+<resources>
+    <string name="app_name">Suikerwater (test)</string>
+</resources>

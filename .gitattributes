@@ -1,0 +1,7 @@
+# Vaste regeleinden, ongeacht op welke machine er gecommit wordt. gradlew draait
+# op de Linux-runner van GitHub en breekt met Windows-regeleinden.
+* text=auto eol=lf
+*.bat text eol=crlf
+
+*.png binary
+*.jar binary

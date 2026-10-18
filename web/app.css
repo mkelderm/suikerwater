@@ -1,0 +1,459 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Suikerwater — een meetinstrument, geen formulier.
+
+   Uitgangspunt: een brouwer leest dit met plakkende handen, telefoon op het
+   aanrecht, in één blik. Daarom tabellarische cijfers, strakke uitlijning en
+   hiërarchie uit typografie in plaats van uit kleurvlakken. Amber als enige
+   accentkleur, omdat dat de kleur van het product is.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light dark;
+
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Mono", "Segoe UI Mono", "Roboto Mono", Menlo, Consolas, monospace;
+
+  /* Spacing-ritme, veelvouden van 4. */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+
+  /* Licht: warm papier. */
+  --bg: #f7f3ec;
+  --surface: #fffdf9;
+  --rule: #e2d9c9;
+  --rule-strong: #cdbfa8;
+  --ink: #221d18;
+  --ink-muted: #6b5f51;
+  /* Donker genoeg voor 4,5:1 op de papierkleur hierboven. Lichter zag beter
+     uit, maar hints en colofon staan op 11–12 px en moeten leesbaar blijven
+     in een schuur met tl-licht. */
+  --ink-faint: #776a5b;
+  --accent: #8f5a0c;
+  --accent-bright: #b4761a;
+  --accent-wash: #f3e8d4;
+  --field-bg: #fffdf9;
+  --field-rule: #c9bba4;
+  --shadow: 0 1px 2px rgba(34, 29, 24, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Donker: warme houtskool, niet het gebruikelijke blauwgrijs. */
+    --bg: #1b1714;
+    --surface: #231e19;
+    --rule: #39302a;
+    --rule-strong: #4c4036;
+    --ink: #f3ece2;
+    --ink-muted: #ab9d8d;
+    --ink-faint: #8b7f71;
+    --accent: #e3a846;
+    --accent-bright: #f0bd66;
+    --accent-wash: #2d2318;
+    --field-bg: #191511;
+    --field-rule: #4c4036;
+    --shadow: none;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  /* Ademruimte voor notch en home-indicator wanneer de app standalone draait. */
+  padding:
+    env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.shell {
+  max-width: 30rem;
+  margin: 0 auto;
+  /* Extra ruimte onderaan zodat het laatste veld niet achter het
+     opgeklapte toetsenbord of de home-indicator verdwijnt. */
+  padding: var(--s5) var(--s4) var(--s7);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Kop ─────────────────────────────────────────────────────────────────── */
+
+.masthead {
+  /* Compact gehouden: samen met de drie velden en de uitkomst moet dit binnen
+     de ~500 px passen die overblijft als het toetsenbord open staat. */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s4);
+  margin: 0 0 var(--s4);
+  padding-bottom: var(--s3);
+  border-bottom: 2px solid var(--ink);
+}
+
+.masthead-text { min-width: 0; }
+
+/* Het wapen is het originele bestand, onbewerkt. Daar zit rondom een
+   transparante rand in: het schild vult 78% van de breedte en 67% van de
+   hoogte (744 x 1052 px, schild op 78..658 x 163..867).
+
+   Daarom staat de hoogte op het hele plaatje en halen de negatieve marges die
+   lege rand weer uit de opmaak. Netto houdt het schild zelf dan ongeveer de
+   hoogte van titel plus tagline, zonder dat de kop 30 px hoger wordt. */
+.crest {
+  flex: none;
+  height: 4.75rem;
+  width: auto;
+  margin: -0.75rem -0.375rem -0.8125rem;
+}
+
+.wordmark {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.tagline {
+  margin: var(--s1) 0 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+/* ─── Paneelkoppen ────────────────────────────────────────────────────────── */
+
+.panel-head {
+  margin: 0 0 var(--s3);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.panel { margin: 0 0 var(--s5); }
+
+/* ─── Invoervelden ────────────────────────────────────────────────────────── */
+
+.field {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0 var(--s3);
+  padding: var(--s3) 0;
+  border-top: 1px solid var(--rule);
+}
+.field:last-of-type { border-bottom: 1px solid var(--rule); }
+
+.field-label {
+  font-size: 1rem;
+  font-weight: 550;
+  /* Een royaal raakdoel: tikken op het label zet de cursor in het veld. */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.field-input {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+}
+
+.field-input input {
+  /* 6 tekens is genoeg voor "999999" of "0,3333" en houdt de rij compact. */
+  width: 6.5ch;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--field-rule);
+  border-radius: 3px;
+  background: var(--field-bg);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  /* Niet onder 16px: daaronder zoomt de mobiele browser in bij focus. */
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  box-shadow: var(--shadow);
+}
+
+.field-input input:hover { border-color: var(--rule-strong); }
+
+.field-input input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+/* Een veld dat niet te lezen valt: rustig gemarkeerd, geen rood alarm. */
+.field-input input[data-state="bad"] {
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.unit {
+  flex: none;
+  min-width: 2.75ch;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.hint {
+  grid-column: 1 / -1;
+  margin: var(--s1) 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--ink-faint);
+  text-wrap: pretty;
+}
+
+/* ─── Uitkomst ────────────────────────────────────────────────────────────── */
+
+.readout {
+  margin: 0 0 var(--s5);
+  padding: var(--s4);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  /* De enige plek met een accent-rand: hier zit het antwoord. */
+  border-left: 3px solid var(--accent);
+  border-radius: 2px;
+  box-shadow: var(--shadow);
+}
+
+.figures { display: grid; gap: var(--s3); }
+
+.figure {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+}
+
+.figure-label {
+  font-size: 0.9375rem;
+  font-weight: 550;
+  color: var(--ink-muted);
+}
+
+.figure-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2em;
+  min-width: 0;
+}
+
+.figure output {
+  /* Krimpt mee bij een absurd lang getal in plaats van de rij te breken. */
+  font-size: clamp(1.75rem, 11vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.figure-unit {
+  font-style: normal;
+  font-size: 0.875rem;
+  font-weight: 500;
+  /* Niet --ink-faint: dat haalt op de lichtere kaartachtergrond geen 4,5:1,
+     en dit is op 14 px gewone tekstgrootte. */
+  color: var(--ink-muted);
+}
+
+/* Het totaal is gevolg, niet doel: kleiner en onder een scheiding. */
+.figure--total {
+  margin-top: var(--s1);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--rule);
+}
+.figure--total .figure-label { font-size: 0.8125rem; }
+.figure--total output {
+  font-size: 1.25rem;
+  font-weight: 550;
+  color: var(--ink-muted);
+}
+
+/* Afwezige of onmogelijke uitkomst: hetzelfde formaat, zonder valse precisie. */
+.figure output[data-empty] { color: var(--ink-faint); font-weight: 500; }
+
+.notice {
+  margin: var(--s4) 0 0;
+  padding: var(--s3);
+  background: var(--accent-wash);
+  border-left: 2px solid var(--accent);
+  border-radius: 2px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+
+/* ─── Afgeleide gegevens ──────────────────────────────────────────────────── */
+
+.detail-panel { margin: 0 0 var(--s5); }
+
+.detail {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s3);
+  padding: var(--s2) 0;
+  border-top: 1px solid var(--rule);
+}
+.detail-row:last-child { border-bottom: 1px solid var(--rule); }
+
+.detail dt { color: var(--ink-faint); }
+
+.detail dd {
+  margin: 0;
+  text-align: right;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.detail dd span { color: var(--ink); font-weight: 550; }
+
+/* ─── Geavanceerd ─────────────────────────────────────────────────────────── */
+
+.advanced { margin: 0 0 var(--s5); }
+
+.disclosure {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--s2) 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: var(--ink-muted);
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+}
+
+.disclosure:hover { color: var(--ink); }
+
+.disclosure:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.disclosure-mark {
+  flex: none;
+  width: 0; height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transition: transform 140ms ease;
+}
+
+.disclosure[aria-expanded="true"] .disclosure-mark {
+  transform: rotate(90deg) translateX(1px);
+}
+
+.advanced-body { padding-top: var(--s2); }
+
+.advanced-intro {
+  margin: var(--s2) 0 var(--s3);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-faint);
+  text-wrap: pretty;
+}
+
+.reset {
+  margin-top: var(--s4);
+  min-height: 44px;
+  padding: var(--s2) var(--s4);
+  border: 1px solid var(--field-rule);
+  border-radius: 3px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 550;
+  cursor: pointer;
+}
+
+.reset:hover { border-color: var(--rule-strong); }
+
+.reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.reset:active { background: var(--accent-wash); }
+
+/* ─── Voet ────────────────────────────────────────────────────────────────── */
+
+.colophon {
+  margin: var(--s6) 0 0;
+  padding-top: var(--s4);
+  border-top: 1px solid var(--rule);
+}
+
+.colophon p {
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  color: var(--ink-faint);
+  text-wrap: pretty;
+}
+
+/* ─── Varianten ───────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
+}
+
+/* Wat ruimer zodra er echt breedte is, zonder de mobiele opzet te verlaten. */
+@media (min-width: 26rem) {
+  .wordmark { font-size: 1.75rem; }
+  .crest { height: 5.5rem; margin: -0.875rem -0.4375rem -0.9375rem; }
+  .readout { padding: var(--s5); }
+}
+
+@media (forced-colors: active) {
+  .readout, .field-input input, .reset { border: 1px solid CanvasText; }
+  .figure output { color: CanvasText; }
+}

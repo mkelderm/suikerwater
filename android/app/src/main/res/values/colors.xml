@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gelijk aan de achtergrondkleur (bg) in web/app.css, zodat er bij het
+         opstarten en achter de systeembalken geen andere kleur doorschemert
+         dan die van de pagina. -->
+    <color name="page">#F7F3EC</color>
+    <!-- De amber ondergrond van het icoon, GROUND in tools/make-icons.mjs. -->
+    <color name="ic_launcher_background">#C8862A</color>
+</resources>
